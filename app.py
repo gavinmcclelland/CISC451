@@ -132,7 +132,7 @@ fig = go.Figure(go.Densitymapbox(
     ))
 
 fig.update_layout(
-    height=600,
+    height=700,
     mapbox = {
         'style': "stamen-terrain",
         'center': {"lat": 44.227860, "lon": -76.496938},

@@ -27,14 +27,101 @@ print(clean.shape)
 
 
 
-# with open("A1_geo\\neighbourhoods.geojson", "r") as geo:
-#     neighbourhood_geojson = json.load(geo)
-# with open("A1_geo\\transit-gtfs-routes.geojson", "r") as geo:
-#     routes_geojson = json.load(geo)
+with open("A1_geo\\neighbourhoods.geojson", "r") as geo:
+    neighbourhood_geojson = json.load(geo)
+with open("A1_geo\\transit-gtfs-routes.geojson", "r") as geo:
+    routes_geojson = json.load(geo)
 # with open("A1_geo\\transit_data.geojson", "r") as geo:
 #     transit_data_geojson = json.load(geo)
+colors = [
+    "firebrick",
+    "floralwhite",
+    "forestgreen",
+    "fuchsia",
+    "gainsboro",
+    "ghostwhite",
+    "gold",
+    "goldenrod",
+    "gray",
+    "grey",
+    "green",
+    "greenyellow",
+    "honeydew",
+    "hotpink",
+    "indianred",
+    "indigo",
+    "ivory",
+    "khaki",
+    "lavender",
+    "lavenderblush",
+    "lawngreen",
+    "lemonchiffon",
+    "lightblue",
+    "lightcoral",
+    "lightcyan",
+    "lightgoldenrodyellow",
+    "lightgray",
+    "lightgrey",
+    "lightgreen",
+    "lightpink",
+    "lightsalmon",
+    "lightseagreen",
+    "lightskyblue",
+    "lightslategray",
+    "lightslategrey",
+    "lightsteelblue",
+    "lightyellow",
+    "lime",
+    "limegreen",
+    "linen",
+    "magenta",
+    "maroon",
+    "mediumaquamarine",
+    "mediumblue",
+    "mediumorchid",
+    "mediumpurple",
+    "mediumseagreen",
+    "mediumslateblue",
+    "mediumspringgreen",
+    "mediumturquoise",
+    "mediumvioletred",
+    "midnightblue",
+    "mintcream",
+    "mistyrose",
+    "moccasin",
+    "navajowhite",
+    "navy",
+    "oldlace",
+    "olive",
+    "olivedrab",
+    "orange",
+    "orangered"
+]
+layers = []
 
-
+print(len(neighbourhood_geojson['features']))
+print(len(colors))
+for n, neighbourhood in enumerate(neighbourhood_geojson['features']):
+    layers.append(
+        {
+            'visible': True,
+            'source': neighbourhood,
+            'type': "fill",
+            'below': "traces",
+            'color': colors[n],
+            'opacity': 0.6
+        }
+    )
+layers.append(
+    {
+        'visible': True,
+        'source': routes_geojson,
+        'type': "line",
+        'below': "traces",
+        'color': "orangered",
+        'opacity': 1
+    }
+)
 fig = go.Figure(go.Densitymapbox(
     # mode = "markers",
     lon = clean.Longitude,
@@ -50,31 +137,31 @@ fig.update_layout(
         'style': "stamen-terrain",
         'center': {"lat": 44.227860, "lon": -76.496938},
         'zoom': 10,
-        # 'layers': [
-        #         {
-        #             'visible': True,
-        #             'source': neighbourhood_geojson,
-        #             'type': "fill",
-        #             'below': "traces",
-        #             'color': "royalblue",
-        #             'opacity': 0.6
-        #         },
-        #         {
-        #             'visible': True,
-        #             'source': routes_geojson,
-        #             'type': "line",
-        #             'below': "traces",
-        #             'color': "green",
-        #             'opacity': 0.8
-        #         },
-        #         {
-        #             'visible': True,
-        #             'source': transit_data_geojson,
-        #             'type': "circle",
-        #             'color': "pink",
-        #             'opacity': 1
-        #         }
-        #     ]
+        'layers': layers
+                # {
+                #     'visible': True,
+                #     'source': neighbourhood_geojson['features'][0],
+                #     'type': "fill",
+                #     'below': "traces",
+                #     'color': "royalblue",
+                #     'opacity': 0.6
+                # },
+                # {
+                #     'visible': True,
+                #     'source': routes_geojson,
+                #     'type': "line",
+                #     'below': "traces",
+                #     'color': "green",
+                #     'opacity': 0.8
+                # },
+                # {
+                #     'visible': True,
+                #     'source': transit_data_geojson,
+                #     'type': "circle",
+                #     'color': "pink",
+                #     'opacity': 1
+                # }
+            # ]
             },
     margin = {'l':0, 'r':0, 'b':0, 't':0})
 f = go.FigureWidget(fig)

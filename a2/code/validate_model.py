@@ -19,7 +19,7 @@ def validate_model(model, x_train, y_train, model_name, cv=10, group_names=None,
         categories:    List of strings containing the categories to be displayed on the x,y axis. Default is 'auto'
     """
     if cv:
-        y_pred = cross_val_predict(model, x_train, y_train, cv=cv)
+        y_pred = cross_val_predict(model, x_train, y_train, n_jobs=-1, cv=cv)
     else:
         y_pred = model.fit(x_train, y_train)
     conf_matrix = confusion_matrix(y_train, y_pred)

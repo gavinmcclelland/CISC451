@@ -15,7 +15,7 @@ def plot_roc_curve(y_test, y_pred, title=None, ax=None):
     if ax:
         if title is not None:
             ax.set_title(title)
-        ax.plot(fpr, tpr, 'b', label = 'AUC = %0.2f' % roc_auc)
+        ax.plot(fpr, tpr, 'b', label = 'AUC = %0.4f' % roc_auc)
         ax.legend(loc = 'lower right')
         ax.plot([0, 1], [0, 1],'r--')
         ax.set_xlim([0, 1])
@@ -25,7 +25,7 @@ def plot_roc_curve(y_test, y_pred, title=None, ax=None):
     else:
         if title is not None:
             plt.title(title)
-        plt.plot(fpr, tpr, 'b', label = 'AUC = %0.2f' % roc_auc)
+        plt.plot(fpr, tpr, 'b', label = 'AUC = %0.4f' % roc_auc)
         plt.legend(loc = 'lower right')
         plt.plot([0, 1], [0, 1],'r--')
         plt.xlim([0, 1])

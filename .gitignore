@@ -132,8 +132,10 @@ dmypy.json
 .vscode/
 
 # Datasets
-.csv
+*.csv
 
 # Figures
-.png
-.avi
+*.png
+*.avi
+
+# Zipped archives and submissions

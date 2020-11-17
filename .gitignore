@@ -132,7 +132,7 @@ dmypy.json
 .vscode/
 
 # Datasets
-*.csv
+#*.csv
 
 # Figures
 *.png

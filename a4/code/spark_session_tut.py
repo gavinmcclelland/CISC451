@@ -1,5 +1,6 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import count, udf, explode, array, sum, col, abs, countDistinct
+# from pyspark.sql.functions import count, udf, explode, array, sum, col, abs, countDistinct, split
+import pyspark.sql.functions as F
 from pyspark.sql.types import IntegerType, StringType, StructField, StructType, Row, FloatType
 
 POSITIVE_PATH = r"C:\Users\mcunningham\Documents\PythonProjects\CISC451\a4\data\positive.txt"
@@ -44,9 +45,9 @@ def determine_review_sentiment(positive_file_path, negative_file_path, reviews_f
 
 
     # Convert to a udf functions
-    get_label_udf = udf(get_label, StringType())
-    get_percentage_udf = udf(get_percentage, FloatType())
-    classify_review_udf = udf(classify_review, IntegerType())
+    get_label_udf = F.udf(get_label, StringType())
+    get_percentage_udf = F.udf(get_percentage, FloatType())
+    classify_review_udf = F.udf(classify_review, IntegerType())
 
     spark = SparkSession.builder.master("local")\
         .config("spark.executor.memory", "3g")\
@@ -71,35 +72,32 @@ def determine_review_sentiment(positive_file_path, negative_file_path, reviews_f
         reviews_file_path,
         sep="\t",
         schema=schema
-        ).limit(100000).drop(
-            "MemberID",
-            "Date",
-            "NumHelpfulFeedback",
-            "NumFeedback",
-            "Rating",
-            "Title"
-        )
+        ).select(
+            "ProductID",
+            "Body",
+        ).dropna().repartition(1000, "ProductID")
     print(reviews.count())
 
-    partition_mapping = {}
-    for index, product_id in enumerate(reviews.select("ProductID").distinct().collect()):
-        partition_mapping[product_id["ProductID"]] = index
-    print(partition_mapping)
-    num_partitions = index + 1
+    # partition_mapping = {}
+    # for index, product_id in enumerate(reviews.select("ProductID").distinct().collect()):
+    #     partition_mapping[product_id["ProductID"]] = index
+    # print(partition_mapping)
+    # num_partitions = index + 1
 
-    def product_group_partitioner(key):
-        return partition_mapping[key]
+    # def product_group_partitioner(key):
+    #     return partition_mapping[key]
 
-    reviews = reviews.rdd.map(lambda row: (row[0], row))
-    reviews = reviews.partitionBy(num_partitions, product_group_partitioner)
-    reviews = spark.createDataFrame(reviews.map(lambda row: row[1]))
+    # reviews = reviews.rdd.map(lambda row: (row[0], row))
+    # reviews = reviews.partitionBy(num_partitions, product_group_partitioner)
+    # reviews = spark.createDataFrame(reviews.map(lambda row: row[1]))
 
-    reviews = reviews.withColumn("Classification", classify_review_udf("Body"))
+    # reviews = reviews.withColumn("Classification", classify_review_udf("Body"))
+    reviews = reviews.withColumn("Body", F.split(F.trim(F.col("Body"))), " ")
     reviews = reviews.groupby(
         ['ProductID']
         ).agg(
-            count("Classification").alias('NumReviews'),
-            sum("Classification").alias("ReviewScore")
+            F.count("Classification").alias('NumReviews'),
+            F.sum("Classification").alias("ReviewScore")
         )
     # reviews.createOrReplaceTempView("REVIEWS")
     # reviews = spark.sql(
